@@ -6,8 +6,6 @@ os.system("printf '\033]2;Hudson Rock v1.0 👨🏽‍💻\a'")
 
 init(autoreset=True)
 
-init(autoreset=True)
-
 def mostrar_banner():
     banner = f"""
 {Fore.RED}▗▖ ▗▖█  ▐▌▐▌ ▄▄▄  ▄▄▄  ▄▄▄▄      ▗▄▄▖  ▄▄▄  ▗▞▀▘█  ▄ 
@@ -127,4 +125,4 @@ def menu():
 if __name__ == "__main__":
     mostrar_banner()
     while True:
-        menu()
+        menu()
