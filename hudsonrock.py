@@ -6,6 +6,8 @@ os.system("printf '\033]2;Hudson Rock v1.0 👨🏽‍💻\a'")
 
 init(autoreset=True)
 
+init(autoreset=True)
+
 def mostrar_banner():
     banner = f"""
 {Fore.RED}▗▖ ▗▖█  ▐▌▐▌ ▄▄▄  ▄▄▄  ▄▄▄▄      ▗▄▄▖  ▄▄▄  ▗▞▀▘█  ▄ 
@@ -13,7 +15,7 @@ def mostrar_banner():
 {Fore.RED}▐▛▀▜▌  ▗▞▀▜▌▄▄▄▀ ▀▄▄▄▀ █   █     ▐▛▀▚▖▀▄▄▄▀     █ ▀▄ 
 {Fore.RED}▐▌ ▐▌  ▝▚▄▟▌                     ▐▌ ▐▌          █  █
 {Style.RESET_ALL}
-{Fore.WHITE}{Style.BRIGHT}== 🔍 Infostealer Intelligence Free Integration 👁️ =={Style.RESET_ALL}
+{Fore.WHITE}{Style.BRIGHT}== 🔍 Infostealer Intelligence Free Integration 👁 =={Style.RESET_ALL}
 """
     print(banner)
     spaces = 18
@@ -39,35 +41,16 @@ def consultar_api(tipo, valor):
         data = response.json()
 
         print(Fore.CYAN + "\n--- Resultados ---")
-        
-        # Mensajes personalizados para cada tipo de búsqueda
-        mensajes_no_resultados = {
-            'email': f"No se encontraron equipos infectados asociados al email: {valor}",
-            'username': f"No se encontraron equipos infectados asociados al usuario: {valor}",
-            'domain': f"No se encontraron resultados para el dominio: {valor}",
-            'urls-by-domain': f"No se encontraron URLs comprometidas para el dominio: {valor}",
-            'ip': f"No se encontraron equipos infectados asociados a la IP: {valor}"
-        }
-        
-        # Verificar si hay resultados
-        if not data or data.get('stealers') == [] or (isinstance(data, dict) and data.get('total_user_services', 0) == 0):
-            print(Fore.YELLOW + mensajes_no_resultados[tipo])
-            return
-            
         print_formato_plano(data)
 
     except requests.exceptions.RequestException as e:
         print(Fore.RED + "Error en la petición:", e)
 
 def print_formato_plano(data, indent=0, in_stealers=False):
-    # Si los datos están vacíos, no imprimir nada
-    if not data or data == {} or data == []:
-        return
-        
-    # Campos a excluir (incluimos 'message' para no mostrar el mensaje en inglés)
+    # Campos a excluir
     excluded_fields = {'message', 'logo', 'is_shopify'}
     
-    # Resto de la función permanece igual...
+    # Campos importantes para destacar
     important_fields = {
         'total_corporate_services', 'total_user_services', 'date_compromised',
         'computer_name', 'operating_system', 'malware_path', 'ip',
@@ -77,6 +60,7 @@ def print_formato_plano(data, indent=0, in_stealers=False):
     }
     
     if isinstance(data, dict):
+        # Caso especial para el diccionario principal
         if not in_stealers and 'stealers' in data:
             print_formato_plano(data['stealers'], indent, True)
             return
@@ -85,6 +69,7 @@ def print_formato_plano(data, indent=0, in_stealers=False):
             if key in excluded_fields:
                 continue
                 
+            # Mostrar campos importantes con formato
             if key in important_fields:
                 if key == 'top_passwords' or key == 'top_logins':
                     print("  " * indent + f"{Fore.RED}{key.upper()}:{Style.RESET_ALL}")
@@ -96,6 +81,7 @@ def print_formato_plano(data, indent=0, in_stealers=False):
                 print_formato_plano(value, indent, in_stealers)
                 
     elif isinstance(data, list):
+        # Para listas dentro de stealers, mostrar cada elemento numerado
         if in_stealers:
             for i, item in enumerate(data, 1):
                 print("  " * indent + f"{Fore.GREEN}--- INFOSTEALER {i} ---{Style.RESET_ALL}")
