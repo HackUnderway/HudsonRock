@@ -2,7 +2,7 @@ import requests
 import os
 from colorama import init, Fore, Style
 
-os.system("printf '\033]2;Hudson Rock v1.0 👨🏽‍💻\a'")
+os.system("printf '\033]2;Hudson Rock v2.0 👨🏽‍💻\a'")
 
 init(autoreset=True)
 
@@ -23,6 +23,7 @@ def consultar_api(tipo, valor):
     base_urls = {
         'email': f'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/search-by-email?email={valor}',
         'username': f'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/search-by-username?username={valor}',
+        'phone': f'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/search-by-username?username={valor}',
         'domain': f'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/search-by-domain?domain={valor}',
         'urls-by-domain': f'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/urls-by-domain?domain={valor}',
         'ip': f'https://cavalier.hudsonrock.com/api/json/v2/osint-tools/search-by-ip?ip={valor}'
@@ -45,10 +46,8 @@ def consultar_api(tipo, valor):
         print(Fore.RED + "Error en la petición:", e)
 
 def print_formato_plano(data, indent=0, in_stealers=False):
-    # Campos a excluir
     excluded_fields = {'message', 'logo', 'is_shopify'}
-    
-    # Campos importantes para destacar
+
     important_fields = {
         'total_corporate_services', 'total_user_services', 'date_compromised',
         'computer_name', 'operating_system', 'malware_path', 'ip',
@@ -56,30 +55,27 @@ def print_formato_plano(data, indent=0, in_stealers=False):
         'totalStealers', 'employees', 'users', 'third_parties', 'totalUrls',
         'url', 'type', 'occurrence'
     }
-    
+
     if isinstance(data, dict):
-        # Caso especial para el diccionario principal
         if not in_stealers and 'stealers' in data:
             print_formato_plano(data['stealers'], indent, True)
             return
-            
+
         for key, value in data.items():
             if key in excluded_fields:
                 continue
-                
-            # Mostrar campos importantes con formato
+
             if key in important_fields:
-                if key == 'top_passwords' or key == 'top_logins':
+                if key in {'top_passwords', 'top_logins'}:
                     print("  " * indent + f"{Fore.RED}{key.upper()}:{Style.RESET_ALL}")
                 else:
                     print("  " * indent + f"{Fore.YELLOW}{key}:{Style.RESET_ALL}")
-                    
+
                 print_formato_plano(value, indent + 1, in_stealers)
             else:
                 print_formato_plano(value, indent, in_stealers)
-                
+
     elif isinstance(data, list):
-        # Para listas dentro de stealers, mostrar cada elemento numerado
         if in_stealers:
             for i, item in enumerate(data, 1):
                 print("  " * indent + f"{Fore.GREEN}--- INFOSTEALER {i} ---{Style.RESET_ALL}")
@@ -97,6 +93,7 @@ def menu():
     print(f"{Fore.RED}3{Style.RESET_ALL} - Consultar dominio")
     print(f"{Fore.RED}4{Style.RESET_ALL} - Consultar URLs afectadas por dominio")
     print(f"{Fore.RED}5{Style.RESET_ALL} - Consultar dirección IP")
+    print(f"{Fore.RED}6{Style.RESET_ALL} - Consultar teléfono")
     print(f"{Fore.RED}0{Style.RESET_ALL} - Salir")
 
     opcion = input(Fore.CYAN + "\nSelecciona una opción: ").strip()
@@ -116,6 +113,9 @@ def menu():
     elif opcion == '5':
         valor = input("Ingresa la dirección IP: ").strip()
         consultar_api('ip', valor)
+    elif opcion == '6':
+        valor = input("Ingresa el teléfono (ej: +19777334049): ").strip()
+        consultar_api('phone', valor)
     elif opcion == '0':
         print(Fore.GREEN + "¡Hasta luego!")
         exit()
@@ -125,4 +125,4 @@ def menu():
 if __name__ == "__main__":
     mostrar_banner()
     while True:
-        menu()
+        menu()
