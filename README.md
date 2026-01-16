@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/HudsonRock.png"  title="HudsonRock" alt="HudsonRock" width="600"/>
+  <img src="assets/HudsonRock_email.png"  title="HudsonRock" alt="HudsonRock" width="600"/>
 </p>
 
 <p align="center">
